@@ -4,11 +4,22 @@
 
     if (!empty($_POST)){
         $name = $_POST['input_name'];
+        $email = $_POST['input_email'];
+        $password = $_POST['input_password'];
 
         // ユーザー名の空チェック
         // シングルクォーテーション''=空じゃなければ
         if ($name == ''){
             $errors['name'] = 'blank';
+        }
+        // ユーザー名の空チェック
+        // シングルクォーテーション''=空じゃなければ
+        if ($email == ''){
+            $errors['email'] = 'blank';
+        }
+
+        if ($password == ''){
+            $errors['password'] = 'blank';
         }
     }
 ?>
@@ -39,14 +50,15 @@
                     <div class="form-group">
                         <label for="email">メールアドレス</label>
                         <input type="email" name="input_email" class="form-control" id="email" placeholder="example@gmail.com">
-                        <?php if (isset($errors['name']) && $errors['name'] == 'blank'):?>
+                        <!-- issetは入っているかどうか -->
+                        <?php if (isset($errors['email']) && $errors['email'] == 'blank'):?>
                             <p class = "text-danger">メールアドレスを入力してください</p>
                         <?php endif; ?>
                     </div>
                     <div class="form-group">
                         <label for="password">パスワード</label>
                         <input type="password" name="input_password" class="form-control" id="password" placeholder="4 ~ 16文字のパスワード">
-                        <?php if (isset($errors['name']) && $errors['name'] == 'blank'):?>
+                        <?php if (isset($errors['password']) && $errors['password'] == 'blank'):?>
                             <p class = "text-danger">パスワードを入力してください</p>
                         <?php endif; ?>
                     </div>

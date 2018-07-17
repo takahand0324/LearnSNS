@@ -21,6 +21,14 @@
         if ($password == ''){
             $errors['password'] = 'blank';
         }
+        $count = strlen($password);
+        if ($password == ''){
+            $errors['password'] = 'blank';
+        }elseif ($count < 4 || 16 < $count){
+            $errors['password'] = 'length';
+        }
+        
+
     }
 ?>
 
@@ -60,6 +68,9 @@
                         <input type="password" name="input_password" class="form-control" id="password" placeholder="4 ~ 16文字のパスワード">
                         <?php if (isset($errors['password']) && $errors['password'] == 'blank'):?>
                             <p class = "text-danger">パスワードを入力してください</p>
+                        <?php endif; ?>
+                        <?php if (isset($errors['password']) && $errors['password'] == 'length'):?>
+                            <p class = "text-danger">4 ~ 16文字のパスワードを表示してください</p>
                         <?php endif; ?>
                     </div>
                     <div class="form-group">

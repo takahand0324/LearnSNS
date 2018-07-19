@@ -1,5 +1,7 @@
 <?php
     session_start();
+    //ここでdbconnectを呼ぶ
+    require_once('../dbconnect.php');
 
 //以下のregisterはsignup.phpでセッションに変数を入れている
     if (!isset($_SESSION['register'])){
@@ -16,8 +18,13 @@
     $img_name = $_SESSION['register']['img_name'] ;
 
     if (!empty($_POST)){
+        $sql = 'INSERT INTO `user` SET `name`=?, `email`=?, `password`=?, `img_name`=?, `created`=NOW()';
+        $data = array($name, $email, password_hash($password,PASSWORD_DEFAULT),$img_name);
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($data);
+
         //この中のデータベース登録処理を記述します
-        echo '通過テスト' . '<br>';
+        //echo '通過テスト' . '<br>';
     }
     // PHPプログラム
 ?>

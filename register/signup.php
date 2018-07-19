@@ -4,6 +4,8 @@
     date_default_timezone_set('Asia/Manila');
 
     // PHPプログラム
+    $name = '';
+    $email = '';
     $errors = [];
     //getにactionというキーが存在するか、そのactionの中にrewriteが存在するのか、check.phpから戻ってきているのかの確認
     if (isset($_GET['action']) && $_GET['action'] == 'rewrite'){
@@ -104,14 +106,14 @@
                 <form method="POST" action="signup.php" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="name">ユーザー名</label>
-                        <input type="text" name="input_name" class="form-control" id="name" placeholder="山田 太郎">
+                        <input type="text" name="input_name" class="form-control" id="name" placeholder="山田 太郎" value = "<?php echo htmlspecialchars($name); ?>">
                         <?php if (isset($errors['name']) && $errors['name'] == 'blank'):?>
                             <p class = "text-danger">ユーザー名を入力してください</p>
                         <?php endif; ?>
                     </div>
                     <div class="form-group">
                         <label for="email">メールアドレス</label>
-                        <input type="email" name="input_email" class="form-control" id="email" placeholder="example@gmail.com">
+                        <input type="email" name="input_email" class="form-control" id="email" placeholder="example@gmail.com" value = "<?php echo htmlspecialchars($name); ?>">
                         <!-- issetは入っているかどうか -->
                         <?php if (isset($errors['email']) && $errors['email'] == 'blank'):?>
                             <p class = "text-danger">メールアドレスを入力してください</p>

@@ -1,7 +1,15 @@
 <?php
     session_start();
 
+//以下のregisterはsignup.phpでセッションに変数を入れている
+    if (!isset($_SESSION['register'])){
+        header('Location: signup.php');
+        exit();
+    }
+
     //出力テスト
+    //多次元配列、配列の中に配列が入っている
+    //今回は、registerの中にnameなどが入っている
     $name = $_SESSION['register']['name'];
     $email = $_SESSION['register']['email'];
     $password = $_SESSION['register']['password'];
@@ -45,6 +53,7 @@
                         <!-- ③ -->
                         <form method="POST" action="">
                             <!-- ④ -->
+                            <!-- action=rewriteが付いている場合は、check.phpから戻ってきたと判断する -->
                             <a href="signup.php?action=rewrite" class="btn btn-default">&laquo;&nbsp;戻る</a> | 
                             <!-- ⑤ -->
                             <input type="hidden" name="action" value="submit">

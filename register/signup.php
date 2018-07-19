@@ -2,8 +2,17 @@
     session_start();
 
     date_default_timezone_set('Asia/Manila');
+
     // PHPプログラム
     $errors = [];
+    //getにactionというキーが存在するか、そのactionの中にrewriteが存在するのか、check.phpから戻ってきているのかの確認
+    if (isset($_GET['action']) && $_GET['action'] == 'rewrite'){
+        $_POST['input_name'] = $_SESSION['register']['name'];
+        $_POST['input_email'] = $_SESSION['register']['email'];
+        $_POST['input_password'] = $_SESSION['register']['password'];
+
+        $errors['rewrite'] = true;
+    }
 
     if (!empty($_POST)){
         $name = $_POST['input_name'];
@@ -31,7 +40,12 @@
             $errors['password'] = 'length';
         }
         //画像名を取得
-        $file_name = $_FILES['input_img_name']['name'];
+        //undifined index連想配列が定義されていない
+        //もしパラメーターが存在していなければ、ユーザーが送った画像が表示される。
+        $file_name = '';
+        if (!isset($_GET['action'])){
+            $file_name = $_FILES['input_img_name']['name'];
+        }
         //画像が送られてきた場合
         if (!empty($file_name)){
             $file_type = substr($file_name, -3);//画像名の後ろから3文字取得
@@ -53,6 +67,7 @@
             //成功時の処理を記述する
 
             //セッションに変数を入れる
+
             $_SESSION['register']['name'] = $_POST['input_name'];
             $_SESSION['register']['email'] = $_POST['input_email'];
             $_SESSION['register']['password'] = $_POST['input_password'];

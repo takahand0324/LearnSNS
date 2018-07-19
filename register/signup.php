@@ -126,8 +126,10 @@
                             <p class = "text-danger">パスワードを入力してください</p>
                         <?php endif; ?>
                         <?php if (isset($errors['password']) && $errors['password'] == 'length'):?>
-                            <p class = "text-danger">4 ~ 16文字のパスワードを表示してください</p>
+                            <p class = "text-danger">4 ~ 16文字のパスワードを入力してください</p>
                         <?php endif; ?>
+                        <!-- もし$errorsが空じゃなければエラーメッセージを出力する -->
+                        <?php if(!empty($errors)){ ?> <p class = "text-danger">パスワードを再度入力して下さい</p> <?php }?>
                     </div>
                     <div class="form-group">
                         <label for="img_name">プロフィール画像</label>

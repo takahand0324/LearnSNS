@@ -14,9 +14,9 @@
                 <h2 class="text-center content_header">アカウント作成完了</h2>
                 <div class="text-center">
                     <p>ユーザーアカウントの作成が完了しました。</p>
-                    .はファイルの場所を表している, ../は1個上のファイル, ../../は2個上のファイル,
-                    同じ階層の場合は.はいらない。
-                    <a href="../signup.php" class="btn btn-info">サインイン</a>
+                    <!-- .はファイルの場所を表している, ../は1個上のファイル, ../../は2個上のファイル,
+                    同じ階層の場合は.はいらない。 -->
+                    <a href="../signin.php" class="btn btn-info">サインイン</a>
             </div>
         </div>
     </div>

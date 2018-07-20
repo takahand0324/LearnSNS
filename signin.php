@@ -1,18 +1,44 @@
 <?php
 //初期化
 //バリデーション処理
+    require('dbconnect.php');
+    //$errors = array();
+
     $errors = [];
-    
+    session_start();
+
     if (!empty($_POST)){
         $email = $_POST["input_email"];
         $password = $_POST["input_password"];
 
         if($email != '' && $password !=''){
+            $sql = 'SELECT*FROM `users` WHERE `email`=?';
+            $data = [$email];
+            $stmt = $dbh->prepare($sql);
+            $stmt->execute($data);
+            $record = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        //メールアドレスで本人確認
+            if ($record == false){
+                $errors['signin'] = 'failed';
+            }
+            //左側がユーザーが打ったパスワード、右側はデータベースにあるパスワード。２つがうまく認証できるのか確認
+            if (password_verify($password,$record['password'])){
+                //認証成功
+                //SESSION変数にIDを保存
+                $_SESSION['id'] = $record['id'];
+
+                //timeline.phpに移動
+                header("Location: timeline.php");
+            }else{
+                //認証失敗
+                $errors['signin'] = 'failed';
+            }
             //データベースとの照合
         }else{
             $errors['signin'] = 'blank';
         }
-        echo '通過テスト' . '<br>';
+        //echo '通過テスト' . '<br>';
     }
 ?>
 <!DOCTYPE html>
@@ -30,6 +56,12 @@
             <div class="col-xs-8 col-xs-offset-2 thumbnail">
                 <h2 class="text-center content_header">サインイン</h2>
                 <form method="POST" action="" enctype="multipart/form-data">
+                     <?php if(isset($errors['signin']) && $errors['signin'] == 'blank'): ?>
+                            <p class="text-danger">メールアドレスとパスワードを正しく入力してください</p>
+                            <?php endif; ?>
+                            <?php if(isset($errors['signin']) && $errors['signin'] == 'failed'): ?>
+                                <p class = "text-danger">サインインに失敗しました</p>
+                            <?php endif; ?>
                     <div class="form-group">
                         <label for="email">メールアドレス</label>
                         <input type="email" name="input_email" class="form-control" id="email" placeholder="example@gmail.com">

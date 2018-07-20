@@ -18,10 +18,14 @@
     $img_name = $_SESSION['register']['img_name'] ;
 
     if (!empty($_POST)){
-        $sql = 'INSERT INTO `user` SET `name`=?, `email`=?, `password`=?, `img_name`=?, `created`=NOW()';
+        $sql = 'INSERT INTO `users` SET `name`=?, `email`=?, `password`=?, `img_name`=?, `created`=NOW()';
         $data = array($name, $email, password_hash($password,PASSWORD_DEFAULT),$img_name);
         $stmt = $dbh->prepare($sql);
         $stmt->execute($data);
+        //セッションは次のページに行っても残り続けるから、unsetで終わりにする。ポストでは必要ない。
+        unset($_SESSION['register']);
+        header('Location: thanks.php');
+        exit();
 
         //この中のデータベース登録処理を記述します
         //echo '通過テスト' . '<br>';

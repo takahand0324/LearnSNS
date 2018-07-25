@@ -1,5 +1,5 @@
 <?php
-
+    echo '変更1';
     echo 'koko';
     session_start();
 

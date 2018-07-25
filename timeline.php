@@ -4,6 +4,14 @@
     session_start();
     require('dbconnect.php');
 
+    // LEFT JOINで全件取得
+    $id = [];
+    $sql = 'SELECT * FROM `users` WHERE `id` = ?';
+    $data = array($_SESSION['id']);
+    $stmt = $dbh->prepare($sql);
+    $stmt ->execute($data);
+
+
     //以下のregisterはsignup.phpでセッションに変数を入れている
     if (!isset($_SESSION['id'])){
         header('Location: signin.php');
@@ -13,19 +21,22 @@
     $errors = array();
 
     // ユーザーが投稿ボタンを押したら発動
+    //POST送信の時だけ
     if (!empty($_POST)) {
 
         // バリデーション
+        //feedにデータが入る
         $feed = $_POST['feed']; // 投稿データ
 
         // 投稿の空チェック
+        //空だった場合
         if ($feed != '') {
             // 投稿処理
             $sql = 'INSERT INTO `feeds` SET `feed`=?, `user_id`=?, `created`=NOW()';
             $data = array($feed, $signin_user['id']);
             $stmt = $dbh->prepare($sql);
             $stmt->execute($data);
- 
+            //画面をリロードした時に情報がまた、送られてしまうから headerで飛ばす必要がある。
             header('Location: timeline.php');
             exit();
         } else {
@@ -33,13 +44,28 @@
         }
     }
 
+        $sql = 'SELECT `f`.*, `u`.`name`, `u`.`img_name` FROM `feeds` AS `f` LEFT JOIN `users` AS `u` ON `f`.`user_id`=`u`.`id` ORDER BY `created` DESC';
 
-    $sql = 'SELECT * FROM `users` WHERE `id` = ?';
-    $data = array($_SESSION['id']);
+    $data = array();
     $stmt = $dbh->prepare($sql);
     $stmt ->execute($data);
 
-    $signin_user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $comments = array();
+    while (1) {
+      $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($rec == false) {
+        break;
+      }
+      $comments[] = $rec;
+    }
+    // echo "<pre>";
+    // var_dump($photos);
+    // echo "<pre>";
+    // ３．データベースを切断する
+    $dbh = null;
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -107,19 +133,20 @@
             <input type="submit" value="投稿する" class="btn btn-primary">
           </form>
         </div>
+        <?php foreach ($comments as $comment): ?>
           <div class="thumbnail">
             <div class="row">
               <div class="col-xs-1">
-                <img src="https://placehold.jp/40x40.png" width="40">
+                <img src="user_profile_img/<?php echo $feed['img_name']; ?>" width="40">
               </div>
               <div class="col-xs-11">
-                野原ひろし<br>
-                <a href="#" style="color: #7F7F7F;">2018-03-03</a>
+                <?php echo $comment ['name']; ?><br>
+                <a href="#" style="color: #7F7F7F;"><?php echo $comment ['created']; ?></a>
               </div>
             </div>
             <div class="row feed_content">
               <div class="col-xs-12" >
-                <span style="font-size: 24px;">夢は逃げない。逃げるのはいつも自分だ。</span>
+                <span style="font-size: 24px;"><?php echo $comment ['feed']; ?></span>
               </div>
             </div>
             <div class="row feed_sub">
@@ -137,6 +164,7 @@
               </div>
             </div>
           </div>
+          <?php endforeach; ?>
         <div aria-label="Page navigation">
           <ul class="pager">
             <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Newer</a></li>

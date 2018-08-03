@@ -3,15 +3,10 @@
 
     session_start();
     require('dbconnect.php');
-
+    require('function.php');
     // LEFT JOINで全件取得
     $id = [];
-    $sql = 'SELECT * FROM `users` WHERE `id` = ?';
-    $data = array($_SESSION['id']);
-    $stmt = $dbh->prepare($sql);
-    $stmt ->execute($data);
-
-    $signin_user =$stmt->fetch(PDO::FETCH_ASSOC);
+    $signin_user = get_user($dbh, $_SESSION['id']);
 
 
     //以下のregisterはsignup.phpでセッションに変数を入れている
@@ -34,10 +29,8 @@
         //空だった場合
         if ($feed != '') {
             // 投稿処理
-            $sql = 'INSERT INTO `feeds` SET `feed`=?, `user_id`=?, `created`=NOW()';
-            $data = array($feed, $signin_user['id']);
-            $stmt = $dbh->prepare($sql);
-            $stmt->execute($data);
+            create_feed($dbh, $feed, $signin_user['id']);
+
             //画面をリロードした時に情報がまた、送られてしまうから headerで飛ばす必要がある。
             header('Location: timeline.php');
             exit();
@@ -62,14 +55,10 @@
     $page = max($page, 1);
 
     //ヒットしたレコードの数を取得するSQL
-    $sql_count = "SELECT COUNT(*)AS`cnt`FROM`feeds`";
-
-    $stmt_count = $dbh->prepare($sql_count);
-    $stmt_count->execute();
-    $record_cnt = $stmt_count->fetch(PDO::FETCH_ASSOC);
+    
 
     // 取得したページ数を1ページあたりに表示する件数で割って何ページが最後になるか取得
-    $last_page = ceil($record_cnt['cnt'] / CONTENT_PER_PAGE);
+    $last_page = get_last_page($dbh);
 
     // 最後のページより大きい値を渡された場合の対策
     $page = min($page, $last_page);
@@ -101,28 +90,13 @@
       //いいね済みかどうかの確認
 
             // 何件いいねされているか確認
-      $like_sql = "SELECT COUNT(*) AS `like_cnt` FROM `likes` WHERE `feed_id` = ?";
+      
 
-      $like_data = [$rec["id"]];
+      $rec["like_cnt"] = count_like($dbh, $rec["id"]);
 
-      $like_stmt = $dbh->prepare($like_sql);
-      $like_stmt->execute($like_data);
+      $rec["is_liked"] = is_liked($dbh, $signin_user['id'], $rec["id"]);
 
-      $like = $like_stmt->fetch(PDO::FETCH_ASSOC);
 
-      $rec["like_cnt"] = $like["like_cnt"];
-
-      $like_flg_sql = "SELECT * FROM `likes` WHERE `user_id` = ? AND `feed_id` = ?";
-
-      $like_flg_data = [$signin_user['id'], $rec["id"]];
-
-      $like_flg_stmt = $dbh->prepare($like_flg_sql);
-      $like_flg_stmt->execute($like_flg_data);
-
-      $is_liked = $like_flg_stmt->fetch(PDO::FETCH_ASSOC);
-
-      //三項演算子　条件式？ trueだった場合：falseだった場合
-      $rec["is_liked"] = $is_liked ? true : false;
 
       // 以下の文を上で書くとこうなる
       // if ($is_liked){
